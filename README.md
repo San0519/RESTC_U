@@ -33,3 +33,8 @@ Briefly describe your work in the commit title, and make detailed and necessary 
    - FPGA prototype
 ## TimeLine:
 3.13: Already dispathed email for searching instructor, waiting for responses
+
+## DEADLINE
+- Preliminary Round: May
+- ​Regional Final​: July
+- National Final​: August
