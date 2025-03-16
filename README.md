@@ -7,9 +7,9 @@ Here we use Github rather than other SMS applications like QQ or Wechat, because
 Issues part is for only something technical, like CPU SPEC or troubles during implementation. This project would be broken down into few parts and tasks, so do the corresponding issue entries. Unfinished tasks could be also presented in issues part in form of **to-do list**.<br />
 There will be a toubleshooting entry to record all the issues and problems that have been done previously, you should record them in it.
 ### DISCUSSION
-Any other topics and general discussion could be proposed in a discussion entry. When you create a new discussion, there will be some choices for you, please read their description and follow the instructions.
+Any other topics and general discussion could be proposed in a discussion entry. When you create a new discussion, there will be some choices for you, please read their description and follow the instructions. Discussion of topics in "ISSUES" should be put in this part and the **issue ID** should be pasted in each discussion entry if there is any. Replys in "ISSUE" should be only given the possible valid solutions but not the discussion process.
 ### CODE
-Our FPGA prototyping works might be done on the platform of **XILINX**, and the project management of Vivado seems to be hard on Github, so only the `.v` files like verilog headfiles and RTL codes should be uploaded. After each commitment, you should make **code review request** by others before merge them into the main branch. Other core codes but not in `.v` format should obey this rule.
+Our FPGA prototyping works might be done on the platform of **XILINX**, and the project management of Vivado seems to be hard on Github, so only the `.v` files like verilog headfiles and RTL codes should be uploaded. After each commitment, you should make **code review request** by others before merge them into the main branch. Other core codes but not in `.v` format should obey this rule. The standard of coding should be clarified in one separate section.
 ### COMMIT
 Briefly describe your work in the commit title, and make detailed and necessary in the description box.
 ## WORKFLOW
