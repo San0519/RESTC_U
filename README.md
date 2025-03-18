@@ -32,9 +32,10 @@ Briefly describe your work in the commit title, and make detailed and necessary 
    - TOP module verification
    - FPGA prototype
 ## TimeLine:
-3.13: Already dispathed email for searching instructor, waiting for responses
+3.13: Already dispathed email for searching instructor, waiting for responses  
+3.18: Successfully get enrolled. Goodluck.
 
 ## DEADLINE
-- Preliminary Round: May
+- Preliminary Round: May.20
 - ​Regional Final​: July
 - National Final​: August
