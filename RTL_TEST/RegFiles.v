@@ -33,7 +33,7 @@ module RegFiles(
     
     integer i;
     
-    always @(posedge clk or negedge rst_n) begin
+    always @(posedge clk ) begin
         if (!rst_n) begin
             for (i = 0; i < 32; i = i + 1) begin
                 Regs[i] <= 32'b0;

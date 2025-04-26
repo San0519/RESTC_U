@@ -36,7 +36,7 @@ module ME_WB(
     );  
 
 
-    always @(posedge clk , negedge rst_n) begin
+    always @(posedge clk ) begin
         if (!rst_n) begin
             ALU_result_W <= 32'b0;
             Rdata_W <= 32'b0;

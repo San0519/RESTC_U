@@ -30,7 +30,7 @@ module IF_ID(
     output reg  [31:0]  instruction_D
     );
 
-    always @(posedge clk or negedge rst_n) begin
+    always @(posedge clk ) begin
         if (!rst_n || flush_D) begin
             PC_D <= 32'b0;
             instruction_D <= 32'b0;

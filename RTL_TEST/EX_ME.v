@@ -41,7 +41,7 @@ module EX_ME(
 
     );
     
-    always @(posedge clk , negedge rst_n) begin
+    always @(posedge clk ) begin
         if (!rst_n) begin
             ALU_result_M <= 32'b0;
             write_data_M <= 32'b0;

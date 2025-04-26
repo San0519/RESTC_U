@@ -56,7 +56,7 @@ module ID_EX(
 
     );
 
-    always @(posedge clk or negedge rst_n) begin
+    always @(posedge clk ) begin
         if (!rst_n || flush_E) begin
             PC_E <= 32'b0;
             rdata1_E <= 32'b0;

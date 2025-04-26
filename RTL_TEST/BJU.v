@@ -18,7 +18,7 @@
 // Additional Comments:
 // 
 //////////////////////////////////////////////////////////////////////////////////
-//4.13修改了PC_src_D的赋值方�?.
+//4.13修改了PC_src_D的赋值方式.
 module BJU(
     input       [31:0]   PC_D,
     input       [31:0]   rs1_D,
@@ -57,7 +57,7 @@ module BJU(
     reg         BT; //branch taken
 
     assign PC_src_D= (BT || jump) ? 1'b1 : 1'b0;
-    //如果是Branch Taken或�?�分支指令，则PC_src_D�?1，否则为0
+    //如果是Branch Taken或者分支指令，则PC_src_D为1，否则为0
 
     assign rs1_D_fwd = (forward_A_D == Forward_E2D) ? ALU_result_E : 
                         (forward_A_D == Forward_M2D) ? ALU_result_M : 
