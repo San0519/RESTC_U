@@ -35,7 +35,7 @@ module Decoder(
     output reg  [3:0]   ALU_ctrl_D,
     output reg  [2:0]   branch,
     output reg  [2:0]   ls_type_D,//load/store type
-    output      [1:0]   sext_type,
+    output      [2:0]   sext_type,
     output      [1:0]   wb_ctrl_D,
     output              jump,
     output              jump_type,
@@ -104,9 +104,9 @@ module Decoder(
     assign we_reg_D  = (opcode == EXE_S || opcode == EXE_B)? 1'b0 : 1'b1; // Write to register or not,R,I,Load
     assign we_mem_D  = (opcode == EXE_S) ? 1'b1 : 1'b0; // Write to memory or not,Store
     assign wb_ctrl_D = (opcode == EXE_I || opcode == EXE_R || opcode == EXE_AUIPC || opcode == EXE_LUI) ? 2'b00 :  
-                       (opcode == EXE_JAL||EXE_JALR) ? 2'b11 : // J
+                       (opcode == EXE_JAL || opcode == EXE_JALR) ? 2'b11 : // J
                        (opcode == EXE_L) ? 2'b01 : // Load
-                        2'b00; // Default to no write back
+                        2'b00; //
 
     assign ALU_src2_D = (opcode == EXE_I || opcode == EXE_S || opcode == EXE_L|| opcode == EXE_AUIPC || opcode == EXE_LUI ) ? 1'b1 : 1'b0; // ALU source, I-type and S-type instruction_Ds
     assign ALU_src1_D = (opcode == EXE_AUIPC) ? 1'b1 : 1'b0; // ALU source, AUIPC instruction_D
@@ -115,11 +115,18 @@ module Decoder(
     // Jump is used to indicate whether the instruction_D is a jump instruction_D or not
     assign jump_type = (opcode == EXE_JAL)? JAL :JALR; // JALR or JAL
 
-    assign sext_type = (opcode == EXE_I || opcode == EXE_S || opcode == EXE_L || opcode == JALR) ? 2'b00 : // I-type, S-type, Load
-                       (opcode == EXE_B) ? 2'b01 : // B-type
-                       (opcode == EXE_AUIPC || opcode == EXE_LUI) ? 2'b10 : // U-type
-                       (opcode == EXE_JAL) ? 2'b11 : // J-type
-                       2'b00; // Default to I-type
+
+    localparam EXT_I     = 3'b000;  // I-type,JALR,Load,Store.
+    localparam EXT_B     = 3'b001;  // B-type: BEQ, etc.
+    localparam EXT_U     = 3'b011;  // U-type: LUI, AUIPC
+    localparam EXT_JAL   = 3'b010;  // J-type: JAL
+    localparam EXT_S     = 3'b110;  // S-type: Store
+    assign sext_type = (opcode == EXE_I ||  opcode == EXE_L || opcode == EXE_JALR) ? EXT_I : // I-type, S-type, Load
+                       (opcode == EXE_B) ? EXT_B : // B-type
+                       (opcode == EXE_AUIPC || opcode == EXE_LUI) ? EXT_U : // U-type
+                       (opcode == EXE_JAL) ? EXT_JAL : // J-type
+                        (opcode == EXE_S)? EXT_S : // S-type
+                        EXT_I; // Default to I-type
 
 
     always @(*) begin

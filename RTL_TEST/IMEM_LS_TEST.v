@@ -1,3 +1,5 @@
+
+
 module IMEM #(parameter IMEM_SIZE = 1024) (
     input  [31:0] PC,
     output [31:0] instruction
@@ -10,7 +12,7 @@ module IMEM #(parameter IMEM_SIZE = 1024) (
                            memory[PC + 2],
                            memory[PC + 1],
                            memory[PC + 0] };
-//在sub那里有个data hazard
+
     initial begin
         // --- 指令 0: NOP (addi x0, x0, 0) ---
         memory[0]  = 8'h00;
@@ -64,9 +66,9 @@ module IMEM #(parameter IMEM_SIZE = 1024) (
 
 
 
-        // --- sra x8, x1, x1 (0x4010e433) 
+        // --- sra x8, x1, x1 (0x4010e433) 原来是 32~35，现在放到 36~39 ---
         memory[32] = 8'h33;
-        memory[33] = 8'he4;
+        memory[33] = 8'hd4;
         memory[34] = 8'h10;
         memory[35] = 8'h40;
 
@@ -81,8 +83,7 @@ module IMEM #(parameter IMEM_SIZE = 1024) (
         memory[41] = 8'hf5;
         memory[42] = 8'h20;
         memory[43] = 8'h00;
-
-                // lui x11, 1
+        // lui x11, 1
         memory[44] = 8'hb7;
         memory[45] = 8'h15;
         memory[46] = 8'h00;
@@ -92,22 +93,69 @@ module IMEM #(parameter IMEM_SIZE = 1024) (
         memory[49] = 8'h16;
         memory[50] = 8'h00;
         memory[51] = 8'h00;
-        //ADDI x14, x0, -2
-        memory[52] = 8'h13;
-        memory[53] = 8'h07;
-        memory[54] = 8'he0;
-        memory[55] = 8'hff;
-        //SLTU x15, x1,x14
-        memory[56] = 8'hb3;
-        memory[57] = 8'hb7;
-        memory[58] = 8'he0;
+        //sw x1, 0(x0)
+        memory[52] = 8'h23;
+        memory[53] = 8'h20;
+        memory[54] = 8'h10;
+        memory[55] = 8'h00;
+        //sh x4, 4(x0)
+        memory[56] = 8'h23;
+        memory[57] = 8'h12;
+        memory[58] = 8'h40;
         memory[59] = 8'h00;
-        //SLL x16,x1,x2
-        memory[60] = 8'h33;
-        memory[61] = 8'h98;
-        memory[62] = 8'h20;
+        //sb x4, 8(x0)
+        memory[60] = 8'h23;
+        memory[61] = 8'h04;
+        memory[62] = 8'h40;
         memory[63] = 8'h00;
-        //
+        //sw x4, 12(x0)
+        memory[64] = 8'h23;
+        memory[65] = 8'h26;
+        memory[66] = 8'h40;
+        memory[67] = 8'h00;
+        // --- 指令 14: lw x13, 0(x0) (0x00002683) ---
+        memory[68] = 8'h83;
+        memory[69] = 8'h26;
+        memory[70] = 8'h00;
+        memory[71] = 8'h00;
+
+        // --- 指令 15: lw x14, 4(x0) (0x00402703) ---
+        memory[72] = 8'h03;
+        memory[73] = 8'h27;
+        memory[74] = 8'h40;
+        memory[75] = 8'h00;
+
+        // --- 指令 16: lb x15, 12(x0) (0x00c07883) ---
+        memory[76] = 8'h83;
+        memory[77] = 8'h07;
+        memory[78] = 8'hc0;
+        memory[79] = 8'h00;
+
+        // --- 指令 17: lbu x16, 12(x0) (0x00c08403) ---
+        memory[80] = 8'h03;
+        memory[81] = 8'h48;
+        memory[82] = 8'hc0;
+        memory[83] = 8'h00;
+
+        // --- 指令 18: lh x17, 12(x0) (0x00c08883) ---
+        memory[84] = 8'h83;
+        memory[85] = 8'h18;
+        memory[86] = 8'hc0;
+        memory[87] = 8'h00;
+
+        // --- 指令 19: lhu x18, 12(x0) (0x00c09503) ---
+        memory[88] = 8'h03;
+        memory[89] = 8'h59;
+        memory[90] = 8'hc0;
+        memory[91] = 8'h00;
+
+        // --- 指令 20: lw x19, 12(x0) (0x00c09283) ---
+        memory[92] = 8'h83;
+        memory[93] = 8'h29;
+        memory[94] = 8'hc0;
+        memory[95] = 8'h00;
+
+
 
     end
 
