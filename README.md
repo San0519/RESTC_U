@@ -39,3 +39,11 @@ Briefly describe your work in the commit title, and make detailed and necessary 
 - Preliminary Round: May.20
 - ​Regional Final​: July
 - National Final​: August
+
+## Code Notation
+Current source files: without PC_BP(we are TESTing desisgns without branch prediction)  
+Simulation Source： CPU_TEST_TOP,DMEM,IMEM  
+其中，IMEM有不同版本，都是基于R_BASIC_TEST写的。R_BASIC_TEST测试了R类型的指令。  
+现在例化的IMEM中，是测试的load/store类型指令
+
+
