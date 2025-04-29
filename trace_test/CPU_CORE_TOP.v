@@ -84,8 +84,8 @@ module CPU_CORE_TOP(
     //debug ports assignment
     assign debug_wb_pc = PC_W;
     assign debug_wb_ena = we_reg_W;
-    assign debug_wb_reg = WB_data;
-    assign debug_wb_value = rd_W;
+    assign debug_wb_reg = rd_W;
+    assign debug_wb_value = WB_data;
 
 
     assign imem_addr = PC_F;
