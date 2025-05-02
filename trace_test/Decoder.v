@@ -101,7 +101,7 @@ module Decoder(
     assign opcode = instruction_D[6:0];
     //assign we_reg_D  = (opcode == EXE_R || opcode == EXE_I || opcode == EXE_JAL || opcode == EXE_JALR) ? 1'b1 : 1'b0; // Write to register or not,R,I,Load
     //assign we_reg_D  = (opcode == EXE_R || opcode == EXE_I || opcode == EXE_JAL || opcode == EXE_JALR || opcode == EXE_LUI || opcode == EXE_AUIPC || opcode == EXE_L) ? 1'b1 : 1'b0;
-    assign we_reg_D  = (opcode == EXE_S || opcode == EXE_B)? 1'b0 : 1'b1; // Write to register or not,R,I,Load
+    assign we_reg_D  = (opcode == EXE_S || opcode == EXE_B|| opcode==EXE_NOP ) ? 1'b0 : 1'b1; // Write to register or not,R,I,Load
     assign we_mem_D  = (opcode == EXE_S) ? 1'b1 : 1'b0; // Write to memory or not,Store
     assign wb_ctrl_D = (opcode == EXE_I || opcode == EXE_R || opcode == EXE_AUIPC || opcode == EXE_LUI) ? 2'b00 :  
                        (opcode == EXE_JAL || opcode == EXE_JALR) ? 2'b11 : // J

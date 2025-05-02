@@ -29,6 +29,7 @@ module CPU_CORE_TOP(
     output              dmem_we         ,
     output      [2:0]   dmem_type       ,
     //debug ports
+    output reg          debug_wb_have_inst,
     output      [31:0]  debug_wb_pc     ,
     output              debug_wb_ena    ,
     output      [4:0]   debug_wb_reg    ,
@@ -81,12 +82,26 @@ module CPU_CORE_TOP(
     wire [4:0] rd_W;
     wire [1:0] wb_ctrl_W;
 
+    reg [3:0] wb_inst_delay;
+
     //debug ports assignment
-    assign debug_wb_pc = PC_W;
+    assign debug_wb_have_inst = (we_reg_W | wb_inst_delay[2]);
+    assign debug_wb_pc = PC_W * 4;
     assign debug_wb_ena = we_reg_W;
     assign debug_wb_reg = rd_W;
     assign debug_wb_value = WB_data;
-
+ 
+    always @(posedge clk)   begin
+        if(!rst_n)    begin
+            wb_inst_delay <= 2'b0;
+        end
+        else begin
+            wb_inst_delay[0] <= (branch != 3'b010);
+            wb_inst_delay[1] <= wb_inst_delay[0];
+            wb_inst_delay[2] <= wb_inst_delay[1];
+            //wb_inst_delay[3] <= wb_inst_delay[2];
+        end
+    end
 
     assign imem_addr = PC_F;
     assign dmem_addr = ALU_result_M;
