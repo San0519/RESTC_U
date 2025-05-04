@@ -20,39 +20,64 @@
 //////////////////////////////////////////////////////////////////////////////////
 module LSU(
     input       [31:0]   Rdata_M,
-    input       [2:0]   ls_type_M,
-    output reg  [31:0]   Rdata_ext_M
+    input       [3:0]    ls_type_M,
+    output  reg [31:0]   Rdata_ext_M,
+    output  reg [3:0]    we
+
 
 );
 
-    localparam LB        =  3'b000;
-    localparam LH        =  3'b001;
-    localparam LW        =  3'b010;
-    localparam LBU       =  3'b100;
-    localparam LHU       =  3'b101;
+
+    localparam LB        =  4'b0000;
+    localparam LH        =  4'b0010;
+    localparam LW        =  4'b0100;
+    localparam LBU       =  4'b1000;
+    localparam LHU       =  4'b1010;
+    localparam SB        =  4'b0001;
+    localparam SH        =  4'b0011;
+    localparam SW        =  4'b0101;
 
     always@(*)
     begin
         case(ls_type_M)
             LB:begin // LB
                 Rdata_ext_M = {{24{Rdata_M[7]}},Rdata_M[7:0]};
+                we=4'b0000;
             end
             LH:begin // LH
                 Rdata_ext_M = {{16{Rdata_M[15]}},Rdata_M[15:0]};
+                we=4'b0000;
             end
             LW:begin // LW
                 Rdata_ext_M = Rdata_M;
+                we=4'b0000;
             end
             LBU:begin // LBU
                 Rdata_ext_M = {24'b0,Rdata_M[7:0]};
+                we=4'b0000;
             end
             LHU:begin // LHU
                 Rdata_ext_M = {16'b0,Rdata_M[15:0]};
+                we=4'b0000;
+            end
+            SB:begin // SB
+                Rdata_ext_M = 0;
+                we=4'b0001;
+            end
+            SH:begin // SH
+                Rdata_ext_M = 0;
+                we=4'b0011;
+            end
+            SW:begin // SW
+                Rdata_ext_M = 0;
+                we=4'b1111;
             end
             default:begin
-                Rdata_ext_M = Rdata_M;
+                Rdata_ext_M = 0;
+                we=4'b0000;
             end
         endcase
+        
     end
 
 endmodule

@@ -50,7 +50,7 @@ module ExecuteModule(
     reg        [31:0]   rdata2_f_E;
 
 
-    assign src1 = ALU_src1_E ? PC_E : rdata1_f_E;
+    assign src1 = ALU_src1_E ? (PC_E*4) : rdata1_f_E;
     assign src2 = ALU_src2_E ? imm_E : rdata2_f_E;
     assign write_data_E = rdata2_f_E;
     

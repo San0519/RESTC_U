@@ -26,8 +26,8 @@ module CPU_CORE_TOP(
     output      [31:0]  imem_addr       ,
     output      [31:0]  dmem_addr       ,
     output      [31:0]  dmem_wdata      ,
-    output              dmem_we         ,
-    output      [2:0]   dmem_type       ,
+    output      [3:0]   we              ,
+    //output      [2:0]   dmem_type       ,
     //debug ports
     output reg          debug_wb_have_inst,
     output      [31:0]  debug_wb_pc     ,
@@ -85,7 +85,7 @@ module CPU_CORE_TOP(
     reg [3:0] wb_inst_delay;
 
     //debug ports assignment
-    assign debug_wb_have_inst = (we_reg_W | wb_inst_delay[2]);
+    assign debug_wb_have_inst = (we_reg_W || wb_inst_delay[2]);
     assign debug_wb_pc = PC_W * 4;
     assign debug_wb_ena = we_reg_W;
     assign debug_wb_reg = rd_W;
@@ -106,8 +106,8 @@ module CPU_CORE_TOP(
     assign imem_addr = PC_F;
     assign dmem_addr = ALU_result_M;
     assign dmem_wdata = write_data_M;
-    assign dmem_we = we_mem_M;
-    assign dmem_type = ls_type_M;
+    //assign dmem_we = we_mem_M;
+    //assign dmem_type = ls_type_M;
 
                     /*  Instruction Fetch(IF) Stage    */
     //PC module
@@ -202,6 +202,7 @@ module CPU_CORE_TOP(
         .imm_D(imm_D),
         .ALU_result_M(ALU_result_M),
         .ALU_result_E(ALU_result_E),
+        .WB_data(WB_data),//修改
         .branch(branch),
         .forward_A_D(forward_A_D),
         .forward_B_D(forward_B_D),
@@ -219,13 +220,14 @@ module CPU_CORE_TOP(
     );
 
     //ID_EX pipeline register
-    ID_EX u_ID_EX(
+ID_EX u_ID_EX(
         .clk(clk),
         .rst_n(rst_n),
         .flush_E(flush_E),
         .PC_D(PC_D),
         .rdata1_D(rdata1_D),
         .rdata2_D(rdata2_D),
+        .WB_data(WB_data),
         .rs1_D(rs1_D),
         .rs2_D(rs2_D),
         .rd_D(rd_D),
@@ -237,6 +239,8 @@ module CPU_CORE_TOP(
         .we_mem_D(we_mem_D),
         .ls_type_D(ls_type_D),
         .imm_D(imm_D),
+        .forward_1_D(forward_1_D),
+        .forward_2_D(forward_2_D),
 
         .PC_E(PC_E),
         .rdata1_E(rdata1_E),
@@ -253,6 +257,7 @@ module CPU_CORE_TOP(
         .rs1_E(rs1_E),
         .rs2_E(rs2_E)
     );
+
 
 
                     /*  Execute(EX) Stage    */
@@ -302,7 +307,8 @@ module CPU_CORE_TOP(
     LSU u_LSU(
         .Rdata_M(dmem_data),
         .ls_type_M(ls_type_M),
-        .Rdata_ext_M(Rdata_ext_M)
+        .Rdata_ext_M(Rdata_ext_M),
+        .we(we)
     );
 
     //ME_WB pipeline register
@@ -336,7 +342,7 @@ module CPU_CORE_TOP(
     );
                     /*  Non-Pipelined Module    */
     //Amendment Logic
-    Dependence_Stall u_Dependence_Stall(
+Dependence_Stall u_Dependence_Stall(
         .rs1_D(rs1_D),
         .rs2_D(rs2_D),
         .rs1_E(rs1_E),
@@ -358,8 +364,9 @@ module CPU_CORE_TOP(
         .forward_A_D(forward_A_D),
         .forward_B_D(forward_B_D),
         .forward_A_E(forward_A_E),
-        .forward_B_E(forward_B_E)
+        .forward_B_E(forward_B_E),
+        .forward_1_D(forward_1_D),
+        .forward_2_D(forward_2_D)
     );
-
 
 endmodule

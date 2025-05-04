@@ -20,6 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 /// 4.13增添了branch prediction 的flush_D信号
 //4.15 删除了rd_D信号
+//5.3  增添4种Data hazard的代码
 module Dependence_Stall(
     input       [4:0]   rs1_D,
     input       [4:0]   rs2_D,
@@ -42,7 +43,9 @@ module Dependence_Stall(
     output      [1:0]   forward_A_D,
     output      [1:0]   forward_B_D,
     output      [1:0]   forward_A_E,
-    output      [1:0]   forward_B_E
+    output      [1:0]   forward_B_E,
+    output              forward_1_D,
+    output              forward_2_D
 
     );
 
@@ -53,6 +56,7 @@ module Dependence_Stall(
     
     localparam Forward_E2D =2'b01; //forward from Execute to Decode stage
     localparam Forward_M2D =2'b10; //forward from Memory to Decode stage
+    localparam Forward_W2D =2'b11; //forward from Writeback to Decode stage
     localparam Forward_ND =2'b00; //no forward
 
     localparam BNT       =  3'b010; // Branch not taken
@@ -70,10 +74,15 @@ module Dependence_Stall(
 
     assign forward_A_D =(rs1_D!=0 && rs1_D == rd_E && we_reg_E)? Forward_E2D://背靠背RAW型Data Hazard
                         (rs1_D!=0 && rs1_D == rd_M && we_reg_M)? Forward_M2D://隔行式RAW型Data Hazard
+                        (rs1_D!=0 && rs1_D == rd_W && we_reg_W)? Forward_W2D:
                         Forward_ND;
     assign forward_B_D =(rs2_D!=0 && rs2_D == rd_E && we_reg_E)? Forward_E2D:
                         (rs2_D!=0 && rs2_D == rd_M && we_reg_M)? Forward_M2D:
+                        (rs2_D!=0 && rs2_D == rd_W && we_reg_W)? Forward_W2D:
                         Forward_ND;
+    
+    assign forward_1_D = (rs1_D!=0 && rs1_D == rd_W && we_reg_W) ? 1'b1 : 1'b0;
+    assign forward_2_D = (rs2_D!=0 && rs2_D == rd_W && we_reg_W) ? 1'b1 : 1'b0;
 
     //stall/flush logic
     assign lwStall =   (rs1_D == rd_E || rs2_D == rd_E) 
@@ -83,10 +92,10 @@ module Dependence_Stall(
     assign brStall =   (branch!=BNT && wb_ctrl_M == 2'b01)
                     && ((rs1_D == rd_M || rs2_D == rd_M) && (rs1_D != 0 || rs2_D != 0)); 
                         //检测分支使用的寄存器是否为正在进行的load指令的目的寄存器
-    assign stall_F = lwStall || brStall; 
-    assign stall_D = lwStall || brStall; 
+    assign stall_F =  brStall; 
+    assign stall_D =  brStall; 
     assign flush_D = PC_src_D;
     //如果是branch prediction的版本：assign flush_D = (PC_src_D == pred_jump_D) ? 1'b0 : 1'b1;
-    assign flush_E = lwStall || brStall;
+    assign flush_E =  brStall;
 
 endmodule

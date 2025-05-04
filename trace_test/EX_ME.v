@@ -27,7 +27,7 @@ module EX_ME(
     input       [1:0]   wb_ctrl_E,
     input               we_reg_E,
     input               we_mem_E,
-    input       [2:0]   ls_type_E,
+    input       [3:0]   ls_type_E,
     input       [31:0]  PC_E,
     
     output reg  [31:0]  ALU_result_M,
@@ -36,7 +36,7 @@ module EX_ME(
     output reg  [1:0]   wb_ctrl_M,
     output reg          we_reg_M,
     output reg          we_mem_M,
-    output reg  [2:0]   ls_type_M,
+    output reg  [3:0]   ls_type_M,
     output reg  [31:0]  PC_M
 
     );
@@ -49,7 +49,7 @@ module EX_ME(
             wb_ctrl_M <= 2'b0;
             we_reg_M <= 1'b0;
             we_mem_M <= 1'b0;
-            ls_type_M <= 3'b0;
+            ls_type_M <= 4'b0;
             PC_M <= 32'b0;
         end else begin
             ALU_result_M <= ALU_result_E;

@@ -26,6 +26,7 @@ module ID_EX(
     input       [31:0]  PC_D,
     input       [31:0]  rdata1_D,
     input       [31:0]  rdata2_D,
+    input       [31:0]  WB_data,
     input       [4:0]   rs1_D,
     input       [4:0]   rs2_D,
     input       [4:0]   rd_D,
@@ -35,8 +36,10 @@ module ID_EX(
     input               ALU_src2_D,
     input               we_reg_D,
     input               we_mem_D,
-    input       [2:0]   ls_type_D,
+    input       [3:0]   ls_type_D,
     input       [31:0]  imm_D,
+    input               forward_1_D,
+    input               forward_2_D,
     
     output reg  [31:0]  PC_E,
     output reg  [31:0]  rdata1_E,
@@ -49,12 +52,16 @@ module ID_EX(
     output reg          ALU_src2_E,
     output reg          we_reg_E,
     output reg          we_mem_E,
-    output reg  [2:0]   ls_type_E,
+    output reg  [3:0]   ls_type_E,
     output reg  [4:0]   rs1_E,
     output reg  [4:0]   rs2_E
 
 
     );
+    wire       [31:0]   rdata1_f_D;
+    wire       [31:0]   rdata2_f_D;
+    assign rdata1_f_D = forward_1_D ? WB_data : rdata1_D;
+    assign rdata2_f_D = forward_2_D ? WB_data : rdata2_D;
 
     always @(posedge clk ) begin
         if (!rst_n || flush_E) begin
@@ -71,12 +78,12 @@ module ID_EX(
             ALU_src2_E <= 1'b0;
             we_reg_E <= 1'b0;
             we_mem_E <= 1'b0;
-            ls_type_E <= 3'b0;
+            ls_type_E <= 4'b0;
 
         end else begin
             PC_E <= PC_D;
-            rdata1_E <= rdata1_D;
-            rdata2_E <= rdata2_D;
+            rdata1_E <= rdata1_f_D;
+            rdata2_E <= rdata2_f_D;
             rd_E <= rd_D;
             rs1_E <= rs1_D;
             rs2_E <= rs2_D; 

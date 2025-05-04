@@ -26,6 +26,7 @@ module BJU(
     input       [31:0]   imm_D,
     input       [31:0]   ALU_result_M,
     input       [31:0]   ALU_result_E,
+    input       [31:0]   WB_data,
     input       [2:0]    branch,
     input       [1:0]    forward_A_D,
     input       [1:0]    forward_B_D,
@@ -50,6 +51,7 @@ module BJU(
 
     localparam Forward_E2D =2'b01; //forward from Execute to Decode stage
     localparam Forward_M2D =2'b10; //forward from Memory to Decode stage
+    localparam Forward_W2D =2'b11; //forward from Writeback to Decode stage
     localparam Forward_ND =2'b00; //no forward
 
     wire [31:0] rs1_D_fwd;
@@ -61,10 +63,12 @@ module BJU(
 
     assign rs1_D_fwd = (forward_A_D == Forward_E2D) ? ALU_result_E : 
                         (forward_A_D == Forward_M2D) ? ALU_result_M : 
+                        (forward_A_D == Forward_W2D) ? WB_data :
                          rs1_D; //forward from Execute to Decode stage or Memory to Decode stage
 
     assign rs2_D_fwd = (forward_B_D == Forward_E2D) ? ALU_result_E :
                         (forward_B_D == Forward_M2D) ? ALU_result_M : 
+                        (forward_B_D == Forward_W2D) ? WB_data :
                          rs2_D; //forward from Execute to Decode stage or Memory to Decode stage
     
     always@(*)
@@ -78,7 +82,7 @@ module BJU(
                     end
                 JALR:
                     begin // JALR
-                        PC_Target_D = (rs1_D + imm_D / 4) & 32'hFFFFFFFE;
+                        PC_Target_D = ((rs1_D_fwd + imm_D ) & 32'hFFFFFFFE)/4;
                     end
                 default:
                     begin

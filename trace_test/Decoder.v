@@ -34,7 +34,7 @@ module Decoder(
     output reg  [4:0]   rd_D,
     output reg  [3:0]   ALU_ctrl_D,
     output reg  [2:0]   branch,
-    output reg  [2:0]   ls_type_D,//load/store type
+    output reg  [3:0]   ls_type_D,//load/store type
     output      [2:0]   sext_type,
     output      [1:0]   wb_ctrl_D,
     output              jump,
@@ -43,8 +43,6 @@ module Decoder(
     output              ALU_src2_D,
     output              we_reg_D,
     output              we_mem_D
-    //output      [2:0]   load_type_D,
-    //output      [1:0]   store_type_D
 
     );
 
@@ -83,14 +81,26 @@ module Decoder(
     //localparam JALR      =  4'b1111;
     localparam NOP       =  4'b1110;
     
-    localparam LB        =  3'b000;
-    localparam LH        =  3'b001;
-    localparam LW        =  3'b010;
-    localparam LBU       =  3'b100;
-    localparam LHU       =  3'b101;
-    localparam SB        =  3'b000;
-    localparam SH        =  3'b001;
-    localparam SW        =  3'b010;
+    localparam LB_F3     =  3'b000;
+    localparam LH_F3     =  3'b001;
+    localparam LW_F3     =  3'b010;
+    localparam LBU_F3    =  3'b100;
+    localparam LHU_F3    =  3'b101;
+    localparam SB_F3     =  3'b000;
+    localparam SH_F3     =  3'b001;
+    localparam SW_F3     =  3'b010;
+
+
+
+
+    localparam LB        =  4'b0000;
+    localparam LH        =  4'b0010;
+    localparam LW        =  4'b0100;
+    localparam LBU       =  4'b1000;
+    localparam LHU       =  4'b1010;
+    localparam SB        =  4'b0001;
+    localparam SH        =  4'b0011;
+    localparam SW        =  4'b0101;
 
 
     
@@ -274,19 +284,19 @@ module Decoder(
                 ALU_ctrl_D = ADD; // ADD for address calculation
                 branch = BNT; // Not used in Load
                 case(funct3)
-                    LB: begin
+                    LB_F3: begin
                         ls_type_D = LB; // Sign-extend for LB
                     end
-                    LH: begin
+                    LH_F3: begin
                         ls_type_D = LH; // Sign-extend for LH
                     end
-                    LW: begin
+                    LW_F3: begin
                         ls_type_D = LW; // Sign-extend for LW
                     end
-                    LBU: begin
+                    LBU_F3: begin
                         ls_type_D = LBU; // Zero-extend for LBU
                     end
-                    LHU: begin
+                    LHU_F3: begin
                         ls_type_D = LHU; // Zero-extend for LHU
                     end
                     default: begin
@@ -303,17 +313,17 @@ module Decoder(
                 ALU_ctrl_D = ADD; // ADD for address calculation
                 branch = BNT; // Not used in S
                 case(funct3)
-                    SB: begin
+                    SB_F3: begin
                         ls_type_D = SB; // Sign-extend for SB
                     end
-                    SH: begin
+                    SH_F3: begin
                         ls_type_D = SH; // Sign-extend for SH
                     end
-                    SW: begin
+                    SW_F3: begin
                         ls_type_D = SW; // Sign-extend for SW
                     end
                     default: begin
-                        ls_type_D = SB; // Default to sign-extend
+                        ls_type_D = SB; // Default to StoreB
                     end
                 endcase
             end

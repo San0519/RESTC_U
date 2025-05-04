@@ -25,8 +25,7 @@ module miniRV_SoC (
         .imem_addr       (imem_addr),
         .dmem_addr       (dmem_addr),
         .dmem_wdata      (dmem_wdata),
-        .dmem_we         (dmem_we),
-        .dmem_type       (),
+        .we              (we),
 
         .debug_wb_have_inst  (debug_wb_have_inst),
         .debug_wb_pc     (debug_wb_pc),
@@ -45,7 +44,7 @@ module miniRV_SoC (
         .clk        (fpga_clk),
         .a          (dmem_addr[15:0]),
         .spo        (dmem_data),
-        .we         (dmem_we),
+        .we         (we),
         .d          (dmem_wdata)
     );
 
