@@ -83,6 +83,7 @@ module CPU_CORE_TOP(
     wire [1:0] wb_ctrl_W;
 
     reg [3:0] wb_inst_delay;
+    wire wb_inst_have_flag;
 
     //debug ports assignment
     assign debug_wb_have_inst = (we_reg_W || wb_inst_delay[2]);
@@ -96,7 +97,7 @@ module CPU_CORE_TOP(
             wb_inst_delay <= 2'b0;
         end
         else begin
-            wb_inst_delay[0] <= (branch != 3'b010);
+            wb_inst_delay[0] <= (branch != 3'b010) | wb_inst_have_flag;
             wb_inst_delay[1] <= wb_inst_delay[0];
             wb_inst_delay[2] <= wb_inst_delay[1];
             //wb_inst_delay[3] <= wb_inst_delay[2];
@@ -178,7 +179,8 @@ module CPU_CORE_TOP(
         .ALU_src1_D(ALU_src1_D),
         .ALU_src2_D(ALU_src2_D),
         .we_reg_D(we_reg_D),
-        .we_mem_D(we_mem_D)
+        .we_mem_D(we_mem_D),
+        .wb_inst_have_flag(wb_inst_have_flag)
     );
 
     //RegisterFile(RegFiles)
