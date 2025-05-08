@@ -49,7 +49,7 @@ module CPU_CORE_TOP(
     wire [4:0] rd_D;
     wire [3:0] ALU_ctrl_D;
     wire [2:0] branch;
-    wire [2:0] ls_type_D; 
+    wire [3:0] ls_type_D; 
     wire [2:0] sext_type;
     wire [1:0] wb_ctrl_D;
     wire [31:0] WB_data;
