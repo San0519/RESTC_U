@@ -19,13 +19,13 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 //
-//当rs_D,rs2_D,rd_D 都不�?要赋值时，�?�不�?
-//�?要一个信号告诉寄存器或�?�内存是否是word,half,byte
-//4.4修改�?(1)we_reg_D的赋值�?�辑(2)在JAL和JARL中ALU_ctrl_D的赋值�?�辑，在这两个指令中，PC值不用ALU计算，正常的+4值由PC模块计算
+//当rs_D,rs2_D,rd_D 都不�?要赋值时，�?�不�?
+//�?要一个信号告诉寄存器或�?�内存是否是word,half,byte
+//4.4修改�?(1)we_reg_D的赋值�?�辑(2)在JAL和JARL中ALU_ctrl_D的赋值�?�辑，在这两个指令中，PC值不用ALU计算，正常的+4值由PC模块计算
 //4.5增添sext_type信号，来选择不同的立即数扩展方式
 //4.10 增添 load/store type信号，来选择不同的load/store方式
 //4.13,将instruction改为instruction_D
-//4.17 branch的ALU操作 应该改为NOP�?
+//4.17 branch的ALU操作 应该改为NOP�?
 //4.24 LUI修改RS1
 module Decoder(
     input       [31:0]  instruction_D,
@@ -151,6 +151,7 @@ module Decoder(
                 funct3 = instruction_D[14:12];
                 funct7 = instruction_D[31:25];
                 branch = BNT; // Not used in R-type
+                ls_type_D =4'b1111; // Not used in R-type
                 wb_inst_have_flag = 1'b0;
                 case (funct3)
                     3'b000: begin // ADD/SUB
@@ -198,6 +199,7 @@ module Decoder(
                 funct3 = instruction_D[14:12];
                 funct7 = instruction_D[31:25];//used for SRLI/SRAI
                 branch = BNT; // Not used in I-type
+                ls_type_D =4'b1111; // Not used in I-type
                 wb_inst_have_flag = 1'b0;
                 case(funct3)
                 3'b000: begin // ADDI
@@ -241,7 +243,8 @@ module Decoder(
                 rs2_D = instruction_D[24:20];
                 rd_D = rd_D; // Not using rd_D in B-type
                 funct3 = instruction_D[14:12];
-                ALU_ctrl_D = NOP; // 应该改为NOP�?
+                ALU_ctrl_D = NOP; // 应该改为NOP�?
+                ls_type_D =4'b1111;
                 case(funct3)
                 3'b000: begin // BEQ
                     branch = BEQ;
@@ -279,6 +282,7 @@ module Decoder(
                 rd_D = instruction_D[11:7]; 
                 ALU_ctrl_D = NOP; // ADD for address calculation
                 branch = BNT; // Not used in JAL
+                ls_type_D =4'b1111; // Not used in JAL
                 wb_inst_have_flag = 1'b0;
             end
             EXE_JALR: begin // JALR
@@ -287,6 +291,7 @@ module Decoder(
                 rd_D = instruction_D[11:7]; 
                 ALU_ctrl_D = NOP; // ADD for address calculation
                 branch = BNT; // Not used in JALR
+                ls_type_D =4'b1111; // Not used in JALR
                 wb_inst_have_flag = 1'b0;
             end
             EXE_L: begin // Load
@@ -357,6 +362,7 @@ module Decoder(
                 rd_D = instruction_D[11:7]; 
                 ALU_ctrl_D = ADD; // ADD for address calculation
                 branch = BNT; // Not used in AUIPC
+                ls_type_D =4'b1111; // Not used in AUIPC
                 wb_inst_have_flag = 1'b0;
             end
             EXE_LUI: begin // LUI
@@ -365,6 +371,7 @@ module Decoder(
                 rd_D = instruction_D[11:7]; 
                 ALU_ctrl_D = ADD; // ADD for address calculation
                 branch = BNT; // Not used in LUI
+                ls_type_D =4'b1111; // Not used in LUI
                 wb_inst_have_flag = 1'b0;
             end
             EXE_NOP: begin // NOP
@@ -373,6 +380,7 @@ module Decoder(
                 rd_D = rd_D; // Not using rd_D in NOP
                 ALU_ctrl_D = NOP;  // NOP operation
                 branch = BNT; // Not used in NOP
+                ls_type_D =4'b1111;
                 wb_inst_have_flag = 1'b0;
             end
 
@@ -382,6 +390,7 @@ module Decoder(
                 rd_D = 5'b0;
                 ALU_ctrl_D = NOP; // Default to NOP
                 branch = BNT; // Not used in default
+                ls_type_D =4'b1111;
                 wb_inst_have_flag = 1'b0;
             end
         endcase
