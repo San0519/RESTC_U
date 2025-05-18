@@ -78,17 +78,17 @@ module BJU(
             case(jump_type)
                 JAL:
                     begin // JAL
-                        PC_Target_D = PC_D + imm_D / 4;
+                        PC_Target_D = PC_D + imm_D ;
                         //PC_Target_D = PC_D + imm_D;
                     end
                 JALR:
                     begin // JALR
-                        PC_Target_D = ((rs1_D_fwd + imm_D ) & 32'hFFFFFFFE) / 4;
+                        PC_Target_D = ((rs1_D_fwd + imm_D ) & 32'hFFFFFFFE) ;
                         //PC_Target_D = ((rs1_D_fwd + imm_D ) & 32'hFFFFFFFE);
                     end
                 default:
                     begin
-                        PC_Target_D = PC_D + imm_D / 4;
+                        PC_Target_D = PC_D + imm_D ;
                         //PC_Target_D = PC_D + imm_D;
                     end
 
@@ -97,7 +97,7 @@ module BJU(
 
         else
             begin
-                PC_Target_D = PC_D + imm_D / 4;
+                PC_Target_D = PC_D + imm_D ;
                 case(branch)
                     BEQ:
                         begin // BEQ

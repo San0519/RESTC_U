@@ -107,7 +107,7 @@ module CPU_CORE_TOP(
 
     assign imem_addr = PC_F;
     assign dmem_addr = ALU_result_M;
-    assign dmem_wdata = write_data_Masked;
+    assign dmem_wdata = write_data_M;
     assign dmem_wen = !we_mem_M;
     assign mask = we;
     //assign dmem_type = ls_type_M;

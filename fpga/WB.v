@@ -40,7 +40,7 @@ module WB(
                 WB_data = Rdata_W;
             end
             PC4:begin
-                WB_data = PC_W*4+4;// PC + 4,from JAL and JALR
+                WB_data = PC_W+4;// PC + 4,from JAL and JALR
             end
             default:begin
                 WB_data = ALU_result_W;
