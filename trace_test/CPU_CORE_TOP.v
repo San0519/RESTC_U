@@ -22,14 +22,14 @@ module CPU_CORE_TOP(
     input               clk             ,
     input               rst_n           ,
     input       [31:0]  imem_data       ,
-    input       [31:0]  dmem_data       ,
+    input       [31:0]  dmem_rdata       ,
     output      [31:0]  imem_addr       ,
     output      [31:0]  dmem_addr       ,
     output      [31:0]  dmem_wdata      ,
-    output      [3:0]   we              ,
-    //output      [2:0]   dmem_type       ,
+    output      [1:0]   mask            ,
+    output              dmem_wen         ,
     //debug ports
-    output reg          debug_wb_have_inst,
+    output              debug_wb_have_inst,
     output      [31:0]  debug_wb_pc     ,
     output              debug_wb_ena    ,
     output      [4:0]   debug_wb_reg    ,
@@ -68,25 +68,26 @@ module CPU_CORE_TOP(
     wire [31:0] imm_E;
     wire [1:0] wb_ctrl_E;
     wire [3:0] ALU_ctrl_E;
-    wire [2:0] ls_type_E;
+    wire [3:0] ls_type_E;
     wire [4:0] rs1_E;
     wire [4:0] rs2_E;
     wire [31:0] write_data_E;
     wire [31:0] write_data_M;
     wire [4:0] rd_M;
     wire [1:0] wb_ctrl_M;
-    wire [2:0] ls_type_M; 
+    wire [3:0] ls_type_M; 
     wire [31:0] Rdata_ext_M;
     wire [31:0] ALU_result_W; 
     wire [31:0] Rdata_W;
     wire [4:0] rd_W;
     wire [1:0] wb_ctrl_W;
+    wire [1:0] we;
 
     reg [3:0] wb_inst_delay;
     wire wb_inst_have_flag;
 
     //debug ports assignment
-    assign debug_wb_have_inst = (we_reg_W || wb_inst_delay[2]);
+    assign debug_wb_have_inst = (we_reg_W | wb_inst_delay[2]);
     assign debug_wb_pc = PC_W * 4;
     assign debug_wb_ena = we_reg_W;
     assign debug_wb_reg = rd_W;
@@ -100,14 +101,14 @@ module CPU_CORE_TOP(
             wb_inst_delay[0] <= (branch != 3'b010) | wb_inst_have_flag;
             wb_inst_delay[1] <= wb_inst_delay[0];
             wb_inst_delay[2] <= wb_inst_delay[1];
-            //wb_inst_delay[3] <= wb_inst_delay[2];
         end
     end
 
     assign imem_addr = PC_F;
     assign dmem_addr = ALU_result_M;
     assign dmem_wdata = write_data_M;
-    //assign dmem_we = we_mem_M;
+    assign dmem_wen = we_mem_M;
+    assign mask = we;
     //assign dmem_type = ls_type_M;
 
                     /*  Instruction Fetch(IF) Stage    */
@@ -307,9 +308,11 @@ ID_EX u_ID_EX(
                     /*  Memory Access(ME) Stage    */
     //Load Store Unit(LSU)
     LSU u_LSU(
-        .Rdata_M(dmem_data),
+        .Rdata_M(dmem_rdata),
         .ls_type_M(ls_type_M),
+        .write_data_M(write_data_M),
         .Rdata_ext_M(Rdata_ext_M),
+        .write_data_Masked(write_data_Masked),
         .we(we)
     );
 
@@ -359,6 +362,7 @@ Dependence_Stall u_Dependence_Stall(
         .we_reg_M(we_reg_M),
         .we_reg_W(we_reg_W),
         .PC_src_D(PC_src_D),
+        .wb_ctrl_D(wb_ctrl_D),
         .stall_F(stall_F),
         .stall_D(stall_D),
         .flush_D(flush_D),

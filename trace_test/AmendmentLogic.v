@@ -36,6 +36,7 @@ module Dependence_Stall(
     input               we_reg_M,
     input               we_reg_W,
     input               PC_src_D,
+    input       [1:0]   wb_ctrl_D,
     output              stall_F,
     output              stall_D,
     output              flush_D,

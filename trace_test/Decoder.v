@@ -103,7 +103,7 @@ module Decoder(
     localparam SB        =  4'b0001;
     localparam SH        =  4'b0011;
     localparam SW        =  4'b0101;
-
+    localparam NONE      =  4'b1111;
 
     
     wire    [6:0]   opcode;
@@ -152,6 +152,7 @@ module Decoder(
                 funct7 = instruction_D[31:25];
                 branch = BNT; // Not used in R-type
                 wb_inst_have_flag = 1'b0;
+                ls_type_D = NONE;   // Not L/S type
                 case (funct3)
                     3'b000: begin // ADD/SUB
                         if (funct7 == 7'b0000000) begin
@@ -199,38 +200,39 @@ module Decoder(
                 funct7 = instruction_D[31:25];//used for SRLI/SRAI
                 branch = BNT; // Not used in I-type
                 wb_inst_have_flag = 1'b0;
+                ls_type_D = NONE;   // Not L/S type
                 case(funct3)
-                3'b000: begin // ADDI
-                        ALU_ctrl_D = ADD; // ADD
-                end
-                3'b001: begin // SLL
-                        ALU_ctrl_D = SLL;
-                end
-                3'b010: begin // SLT
-                        ALU_ctrl_D = SLT;
-                end
-                3'b011: begin // SLTU
-                        ALU_ctrl_D = SLTU;
-                end
-                3'b100: begin // XORI
-                        ALU_ctrl_D = XOR;
-                end
-                3'b101: begin // SRLI/SRAI
-                        if (funct7 == 7'b0000000) begin
-                            ALU_ctrl_D = SRL; // SRLI
-                        end else if (funct7 == 7'b0100000) begin
-                            ALU_ctrl_D = SRA; // SRAI
-                        end
-                end
-                3'b110: begin // ORI
-                        ALU_ctrl_D = OR;
-                end
-                3'b111: begin // ANDI
-                        ALU_ctrl_D = AND;
-                end
-                default: begin
-                    ALU_ctrl_D = ADD; // Default to ADD
-                end
+                    3'b000: begin // ADDI
+                            ALU_ctrl_D = ADD; // ADD
+                    end
+                    3'b001: begin // SLL
+                            ALU_ctrl_D = SLL;
+                    end
+                    3'b010: begin // SLT
+                            ALU_ctrl_D = SLT;
+                    end
+                    3'b011: begin // SLTU
+                            ALU_ctrl_D = SLTU;
+                    end
+                    3'b100: begin // XORI
+                            ALU_ctrl_D = XOR;
+                    end
+                    3'b101: begin // SRLI/SRAI
+                            if (funct7 == 7'b0000000) begin
+                                ALU_ctrl_D = SRL; // SRLI
+                            end else if (funct7 == 7'b0100000) begin
+                                ALU_ctrl_D = SRA; // SRAI
+                            end
+                    end
+                    3'b110: begin // ORI
+                            ALU_ctrl_D = OR;
+                    end
+                    3'b111: begin // ANDI
+                            ALU_ctrl_D = AND;
+                    end
+                    default: begin
+                        ALU_ctrl_D = ADD; // Default to ADD
+                    end
                 endcase
 
             end
@@ -242,35 +244,36 @@ module Decoder(
                 rd_D = rd_D; // Not using rd_D in B-type
                 funct3 = instruction_D[14:12];
                 ALU_ctrl_D = NOP; // 应该改为NOP？
+                ls_type_D = NONE;   // Not L/S type
                 case(funct3)
-                3'b000: begin // BEQ
-                    branch = BEQ;
-                    wb_inst_have_flag = 1'b1;
-                end
-                3'b001: begin // BNE
-                    branch = BNE;
-                    wb_inst_have_flag = 1'b1;
-                end
-                3'b100: begin // BLT
-                    branch = BLT;
-                    wb_inst_have_flag = 1'b1;
-                end
-                3'b101: begin // BGE
-                    branch = BGE;
-                    wb_inst_have_flag = 1'b1;
-                end
-                3'b110: begin // BLTU
-                    branch = BLTU;
-                    wb_inst_have_flag = 1'b1;
-                end
-                3'b111: begin // BGEU
-                    branch = BGEU;
-                    wb_inst_have_flag = 1'b1;
-                end
-                default: begin
-                    branch = BNT; // Default to BEQ,not taken
-                    wb_inst_have_flag = 1'b1;
-                end
+                    3'b000: begin // BEQ
+                        branch = BEQ;
+                        wb_inst_have_flag = 1'b1;
+                    end
+                    3'b001: begin // BNE
+                        branch = BNE;
+                        wb_inst_have_flag = 1'b1;
+                    end
+                    3'b100: begin // BLT
+                        branch = BLT;
+                        wb_inst_have_flag = 1'b1;
+                    end
+                    3'b101: begin // BGE
+                        branch = BGE;
+                        wb_inst_have_flag = 1'b1;
+                    end
+                    3'b110: begin // BLTU
+                        branch = BLTU;
+                        wb_inst_have_flag = 1'b1;
+                    end
+                    3'b111: begin // BGEU
+                        branch = BGEU;
+                        wb_inst_have_flag = 1'b1;
+                    end
+                    default: begin
+                        branch = BNT; // Default to BEQ,not taken
+                        wb_inst_have_flag = 1'b1;
+                    end
                 endcase
             end
             EXE_JAL: begin // J-type jump
@@ -280,6 +283,7 @@ module Decoder(
                 ALU_ctrl_D = NOP; // ADD for address calculation
                 branch = BNT; // Not used in JAL
                 wb_inst_have_flag = 1'b0;
+                ls_type_D = NONE;   // Not L/S type
             end
             EXE_JALR: begin // JALR
                 rs1_D = instruction_D[19:15];
@@ -288,6 +292,7 @@ module Decoder(
                 ALU_ctrl_D = NOP; // ADD for address calculation
                 branch = BNT; // Not used in JALR
                 wb_inst_have_flag = 1'b0;
+                ls_type_D = NONE;   // Not L/S type
             end
             EXE_L: begin // Load
                 rs1_D = instruction_D[19:15];
@@ -358,6 +363,7 @@ module Decoder(
                 ALU_ctrl_D = ADD; // ADD for address calculation
                 branch = BNT; // Not used in AUIPC
                 wb_inst_have_flag = 1'b0;
+                ls_type_D = NONE;   // Not L/S type
             end
             EXE_LUI: begin // LUI
                 rs1_D = 5'b00000; // Using x0 as rs1
@@ -366,6 +372,7 @@ module Decoder(
                 ALU_ctrl_D = ADD; // ADD for address calculation
                 branch = BNT; // Not used in LUI
                 wb_inst_have_flag = 1'b0;
+                ls_type_D = NONE;   // Not L/S type
             end
             EXE_NOP: begin // NOP
                 rs1_D = rs1_D; // Not using rs1 in NOP
@@ -374,6 +381,7 @@ module Decoder(
                 ALU_ctrl_D = NOP;  // NOP operation
                 branch = BNT; // Not used in NOP
                 wb_inst_have_flag = 1'b0;
+                ls_type_D = NONE;   // Not L/S type
             end
 
             default: begin
@@ -383,6 +391,7 @@ module Decoder(
                 ALU_ctrl_D = NOP; // Default to NOP
                 branch = BNT; // Not used in default
                 wb_inst_have_flag = 1'b0;
+                ls_type_D = NONE;   // Not L/S type
             end
         endcase
         
