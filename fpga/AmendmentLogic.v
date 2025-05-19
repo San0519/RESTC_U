@@ -36,6 +36,7 @@ module Dependence_Stall(
     input               we_reg_M,
     input               we_reg_W,
     input               PC_src_D,
+    input       [1:0]   wb_ctrl_D,
     output              stall_F,
     output              stall_D,
     output              flush_D,
@@ -92,10 +93,10 @@ module Dependence_Stall(
     assign brStall =   (branch!=BNT && wb_ctrl_M == 2'b01)
                     && ((rs1_D == rd_M || rs2_D == rd_M) && (rs1_D != 0 || rs2_D != 0)); 
                         //检测分支使用的寄存器是否为正在进行的load指令的目的寄存器
-    assign stall_F =  brStall; 
-    assign stall_D =  brStall; 
-    assign flush_D = PC_src_D;
+    assign stall_F =   lwStall; 
+    assign stall_D =   lwStall; 
+    assign flush_D = (PC_src_D && !lwStall);
     //如果是branch prediction的版本：assign flush_D = (PC_src_D == pred_jump_D) ? 1'b0 : 1'b1;
-    assign flush_E =  brStall;
+    assign flush_E =  lwStall;
 
 endmodule

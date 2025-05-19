@@ -32,6 +32,8 @@ module ExecuteModule(
     input       [3:0]    ALU_ctrl_E,
     input                ALU_src1_E,
     input                ALU_src2_E,
+    input       [1:0]    wb_ctrl_M,
+    input       [31:0]   Rdata_ext_M,
 
 
     output      [31:0]   ALU_result_E,
@@ -61,7 +63,14 @@ module ExecuteModule(
                 rdata1_f_E = rdata1_E;
             end
             Forward_M2E:begin
-                rdata1_f_E = ALU_result_M;
+                if(wb_ctrl_M == 2'b01)
+                begin
+                    rdata1_f_E = Rdata_ext_M;
+                end
+                else 
+                begin
+                    rdata1_f_E = ALU_result_M;
+                end
             end
             Forward_W2E:begin
                 rdata1_f_E = WB_data;
@@ -79,7 +88,14 @@ module ExecuteModule(
                 rdata2_f_E = rdata2_E;
             end
             Forward_M2E:begin
-                rdata2_f_E = ALU_result_M;
+                if(wb_ctrl_M == 2'b01)
+                begin
+                    rdata2_f_E = Rdata_ext_M;
+                end
+                else 
+                begin
+                    rdata2_f_E = ALU_result_M;
+                end
             end
             Forward_W2E:begin
                 rdata2_f_E = WB_data;

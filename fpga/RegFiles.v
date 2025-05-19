@@ -49,6 +49,4 @@ module RegFiles(
 
     assign rdata1_D = (rs1_D == 5'b0) ? 32'b0 : Regs[rs1_D];//read register 1
     assign rdata2_D = (rs2_D == 5'b0) ? 32'b0 : Regs[rs2_D];//read register 2
-
-
 endmodule

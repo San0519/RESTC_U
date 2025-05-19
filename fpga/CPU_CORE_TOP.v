@@ -87,12 +87,12 @@ module CPU_CORE_TOP(
     wire wb_inst_have_flag;
 
     //debug ports assignment
-    assign debug_wb_have_inst = (we_reg_W || wb_inst_delay[2]);
+    assign debug_wb_have_inst = (we_reg_W | wb_inst_delay[2]);
     assign debug_wb_pc = PC_W * 4;
     assign debug_wb_ena = we_reg_W;
     assign debug_wb_reg = rd_W;
     assign debug_wb_value = WB_data;
-
+ 
     always @(posedge clk)   begin
         if(!rst_n)    begin
             wb_inst_delay <= 2'b0;
@@ -101,14 +101,13 @@ module CPU_CORE_TOP(
             wb_inst_delay[0] <= (branch != 3'b010) | wb_inst_have_flag;
             wb_inst_delay[1] <= wb_inst_delay[0];
             wb_inst_delay[2] <= wb_inst_delay[1];
-            //wb_inst_delay[3] <= wb_inst_delay[2];
         end
     end
 
     assign imem_addr = PC_F;
     assign dmem_addr = ALU_result_M;
     assign dmem_wdata = write_data_M;
-    assign dmem_wen = !we_mem_M;
+    assign dmem_wen = we_mem_M;
     assign mask = we;
     //assign dmem_type = ls_type_M;
 
@@ -191,7 +190,7 @@ module CPU_CORE_TOP(
         .rst_n(rst_n),
         .rs1_D(rs1_D),
         .rs2_D(rs2_D),
-        .rd_W(rd_W),//ä¿®æ”¹
+        .rd_W(rd_W),//ÐÞ¸Ä
         .Wdata(WB_data),
         .we_reg_W(we_reg_W),
         .rdata1_D(rdata1_D),
@@ -206,12 +205,14 @@ module CPU_CORE_TOP(
         .imm_D(imm_D),
         .ALU_result_M(ALU_result_M),
         .ALU_result_E(ALU_result_E),
-        .WB_data(WB_data),//ä¿®æ”¹
+        .WB_data(WB_data),//ÐÞ¸Ä
         .branch(branch),
         .forward_A_D(forward_A_D),
         .forward_B_D(forward_B_D),
         .jump(jump),
         .jump_type(jump_type),
+        .wb_ctrl_M(wb_ctrl_M),
+        .Rdata_ext_M(Rdata_ext_M),
         .PC_Target_D(PC_target_D),
         .PC_src_D(PC_src_D)
     );
@@ -278,6 +279,8 @@ ID_EX u_ID_EX(
         .ALU_ctrl_E(ALU_ctrl_E),
         .ALU_src1_E(ALU_src1_E),
         .ALU_src2_E(ALU_src2_E),
+        .wb_ctrl_M(wb_ctrl_M),
+        .Rdata_ext_M(Rdata_ext_M),
         .ALU_result_E(ALU_result_E),
         .write_data_E(write_data_E)
     );
@@ -363,6 +366,7 @@ Dependence_Stall u_Dependence_Stall(
         .we_reg_M(we_reg_M),
         .we_reg_W(we_reg_W),
         .PC_src_D(PC_src_D),
+        .wb_ctrl_D(wb_ctrl_D),
         .stall_F(stall_F),
         .stall_D(stall_D),
         .flush_D(flush_D),
@@ -373,17 +377,5 @@ Dependence_Stall u_Dependence_Stall(
         .forward_B_E(forward_B_E),
         .forward_1_D(forward_1_D),
         .forward_2_D(forward_2_D)
-    );
-
-    ila_1 core_inner_ila (
-	.clk(clk), // input wire clk
-
-	.probe0(imem_data ), // input wire [31:0]  probe0  
-	.probe1(dmem_rdata), // input wire [31:0]  probe1 
-	.probe2(imem_addr ), // input wire [31:0]  probe2 
-	.probe3(dmem_addr ), // input wire [31:0]  probe3 
-	.probe4(dmem_wdata), // input wire [31:0]  probe4 
-	.probe5(mask      ), // input wire [1:0]  probe5 
-	.probe6(dmem_wen  ) // input wire [0:0]  probe6
     );
 endmodule

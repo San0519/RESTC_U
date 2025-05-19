@@ -31,8 +31,8 @@ module PC (
     
 );
 
-    assign PC_next = PC_F + 4; // PC_next is always PC + 4
-    //assign PC_next = PC_F + 1;
+    //assign PC_next = PC_F + 4; // PC_next is always PC + 4
+    assign PC_next = PC_F + 4;
     
     always@(posedge clk or negedge rst_n)begin
         if(!rst_n)begin

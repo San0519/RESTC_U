@@ -18,7 +18,7 @@
 // Additional Comments:
 // 
 //////////////////////////////////////////////////////////////////////////////////
-//4.13淇敼浜哖C_src_D鐨勮祴鍊兼柟寮?.
+//4.13修改了PC_src_D的赋值方??.
 module BJU(
     input       [31:0]   PC_D,
     input       [31:0]   rs1_D,
@@ -32,6 +32,9 @@ module BJU(
     input       [1:0]    forward_B_D,
     input                jump,
     input                jump_type,
+    input       [1:0]    wb_ctrl_M,
+    input       [31:0]   Rdata_ext_M,
+
     output reg  [31:0]   PC_Target_D,
     output               PC_src_D
 
@@ -54,14 +57,14 @@ module BJU(
     localparam Forward_W2D =2'b11; //forward from Writeback to Decode stage
     localparam Forward_ND =2'b00; //no forward
 
-    wire [31:0] rs1_D_fwd;
-    wire [31:0] rs2_D_fwd;
+    reg [31:0] rs1_D_fwd;
+    reg [31:0] rs2_D_fwd;
     reg         BT; //branch taken
 
     assign PC_src_D= (BT || jump) ? 1'b1 : 1'b0;
-    //濡傛灉鏄疊ranch Taken鎴栬?呭垎鏀寚浠わ紝鍒橮C_src_D涓?1锛屽惁鍒欎负0
+    //如果是Branch Taken或???分支指令，则PC_src_D??1，否则为0
 
-    assign rs1_D_fwd = (forward_A_D == Forward_E2D) ? ALU_result_E : 
+/*    assign rs1_D_fwd = (forward_A_D == Forward_E2D) ? ALU_result_E : 
                         (forward_A_D == Forward_M2D) ? ALU_result_M : 
                         (forward_A_D == Forward_W2D) ? WB_data :
                          rs1_D; //forward from Execute to Decode stage or Memory to Decode stage
@@ -70,7 +73,59 @@ module BJU(
                         (forward_B_D == Forward_M2D) ? ALU_result_M : 
                         (forward_B_D == Forward_W2D) ? WB_data :
                          rs2_D; //forward from Execute to Decode stage or Memory to Decode stage
-    
+*/
+    always@(*)
+    begin
+        if(forward_A_D == Forward_E2D)
+            begin
+                rs1_D_fwd = ALU_result_E;
+            end
+        else if(forward_A_D == Forward_M2D)
+            begin
+                if(wb_ctrl_M == 2'b01)begin
+                    rs1_D_fwd = Rdata_ext_M;
+                end
+                else begin
+                    rs1_D_fwd = ALU_result_M;
+                end
+            end 
+        else if(forward_A_D == Forward_W2D)
+            begin
+                rs1_D_fwd = WB_data;
+            end
+        else 
+            begin
+                rs1_D_fwd = rs1_D;
+            end
+    end
+
+always@(*)
+    begin
+        if(forward_B_D == Forward_E2D)
+            begin
+                rs2_D_fwd = ALU_result_E;
+            end
+        else if(forward_B_D == Forward_M2D)
+            begin
+                if(wb_ctrl_M == 2'b01)begin
+                    rs2_D_fwd = Rdata_ext_M;
+                end
+                else begin
+                    rs2_D_fwd = ALU_result_M;
+                end
+            end 
+        else if(forward_B_D == Forward_W2D)
+            begin
+                rs2_D_fwd = WB_data;
+            end
+        else 
+            begin
+                rs2_D_fwd = rs2_D;
+            end
+    end
+
+
+
     always@(*)
     begin
         if(jump)

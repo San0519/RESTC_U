@@ -19,14 +19,14 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 //
-//å½“rs_D,rs2_D,rd_D éƒ½ä¸ï¿½?è¦èµ‹å€¼æ—¶ï¼Œï¿½?ï¿½ä¸ï¿½?
-//ï¿½?è¦ä¸€ä¸ªä¿¡å·å‘Šè¯‰å¯„å­˜å™¨æˆ–ï¿½?ï¿½å†…å­˜æ˜¯å¦æ˜¯word,half,byte
-//4.4ä¿®æ”¹ï¿½?(1)we_reg_Dçš„èµ‹å€¼ï¿½?ï¿½è¾‘(2)åœ¨JALå’ŒJARLä¸­ALU_ctrl_Dçš„èµ‹å€¼ï¿½?ï¿½è¾‘ï¼Œåœ¨è¿™ä¸¤ä¸ªæŒ‡ä»¤ä¸­ï¼ŒPCå€¼ä¸ç”¨ALUè®¡ç®—ï¼Œæ­£å¸¸çš„+4å€¼ç”±PCæ¨¡å—è®¡ç®—
-//4.5å¢æ·»sext_typeä¿¡å·ï¼Œæ¥é€‰æ‹©ä¸åŒçš„ç«‹å³æ•°æ‰©å±•æ–¹å¼
-//4.10 å¢æ·» load/store typeä¿¡å·ï¼Œæ¥é€‰æ‹©ä¸åŒçš„load/storeæ–¹å¼
-//4.13,å°†instructionæ”¹ä¸ºinstruction_D
-//4.17 branchçš„ALUæ“ä½œ åº”è¯¥æ”¹ä¸ºNOPï¿½?
-//4.24 LUIä¿®æ”¹RS1
+//µ±rs_D,rs2_D,rd_D ¶¼²»??Òª¸³ÖµÊ±£¬???²»??
+//??ÒªÒ»¸öĞÅºÅ¸æËß¼Ä´æÆ÷»ò???ÄÚ´æÊÇ·ñÊÇword,half,byte
+//4.4ĞŞ¸Ä??(1)we_reg_DµÄ¸³Öµ???¼­(2)ÔÚJALºÍJARLÖĞALU_ctrl_DµÄ¸³Öµ???¼­£¬ÔÚÕâÁ½¸öÖ¸ÁîÖĞ£¬PCÖµ²»ÓÃALU¼ÆËã£¬Õı³£µÄ+4ÖµÓÉPCÄ£¿é¼ÆËã
+//4.5ÔöÌísext_typeĞÅºÅ£¬À´Ñ¡Ôñ²»Í¬µÄÁ¢¼´ÊıÀ©Õ¹·½Ê½
+//4.10 ÔöÌí load/store typeĞÅºÅ£¬À´Ñ¡Ôñ²»Í¬µÄload/store·½Ê½
+//4.13,½«instruction¸ÄÎªinstruction_D
+//4.17 branchµÄALU²Ù×÷ Ó¦¸Ã¸ÄÎªNOP??
+//4.24 LUIĞŞ¸ÄRS1
 module Decoder(
     input       [31:0]  instruction_D,
     output reg  [4:0]   rs1_D,
@@ -194,7 +194,7 @@ module Decoder(
 
             EXE_I: begin // I-type load
                 rs1_D = instruction_D[19:15];
-                rs2_D = rs2_D;// Not using rs2_D in I-type
+                rs2_D = 5'b00000;// Not using rs2_D in I-type
                 rd_D = instruction_D[11:7];
                 funct3 = instruction_D[14:12];
                 funct7 = instruction_D[31:25];//used for SRLI/SRAI
@@ -243,7 +243,7 @@ module Decoder(
                 rs2_D = instruction_D[24:20];
                 rd_D = rd_D; // Not using rd_D in B-type
                 funct3 = instruction_D[14:12];
-                ALU_ctrl_D = NOP; // åº”è¯¥æ”¹ä¸ºNOPï¿½?
+                ALU_ctrl_D = NOP; // Ó¦¸Ã¸ÄÎªNOP??
                 ls_type_D =4'b1111;
                 case(funct3)
                 3'b000: begin // BEQ
@@ -277,8 +277,8 @@ module Decoder(
                 endcase
             end
             EXE_JAL: begin // J-type jump
-                rs1_D = rs1_D; // Not using rs1 in J-type
-                rs2_D = rs2_D; // Not using rs2_D in J-type
+                rs1_D = 5'b00000; // Not using rs1 in J-type
+                rs2_D = 5'b00000; // Not using rs2_D in J-type
                 rd_D = instruction_D[11:7]; 
                 ALU_ctrl_D = NOP; // ADD for address calculation
                 branch = BNT; // Not used in JAL
@@ -287,7 +287,7 @@ module Decoder(
             end
             EXE_JALR: begin // JALR
                 rs1_D = instruction_D[19:15];
-                rs2_D = rs2_D; // Not using rs2_D in JALR
+                rs2_D = 5'b00000; // Not using rs2_D in JALR
                 rd_D = instruction_D[11:7]; 
                 ALU_ctrl_D = NOP; // ADD for address calculation
                 branch = BNT; // Not used in JALR
@@ -296,7 +296,7 @@ module Decoder(
             end
             EXE_L: begin // Load
                 rs1_D = instruction_D[19:15];
-                rs2_D = rs2_D; // Not using rs2_D in Load
+                rs2_D = 5'b00000; // Not using rs2_D in Load
                 rd_D = instruction_D[11:7]; 
                 funct3 = instruction_D[14:12];
                 ALU_ctrl_D = ADD; // ADD for address calculation
@@ -332,7 +332,7 @@ module Decoder(
             EXE_S: begin // S-type store
                 rs1_D = instruction_D[19:15];
                 rs2_D = instruction_D[24:20];
-                rd_D = rd_D; // Not using rd_D in S-type
+                rd_D = 5'b00000; // Not using rd_D in S-type
                 funct3 = instruction_D[14:12];
                 ALU_ctrl_D = ADD; // ADD for address calculation
                 branch = BNT; // Not used in S
@@ -357,9 +357,9 @@ module Decoder(
             end
             
             EXE_AUIPC: begin // AUIPC
-                rs1_D = rs1_D; // Not using rs1 in AUIPC
-                rs2_D = rs2_D; // Not using rs2_D in AUIPC
-                rd_D = instruction_D[11:7]; 
+                rs1_D = 5'b00000; // Not using rs1 in AUIPC
+                rs2_D = 5'b00000; // Not using rs2_D in AUIPC
+                rd_D = instruction_D[11:7];
                 ALU_ctrl_D = ADD; // ADD for address calculation
                 branch = BNT; // Not used in AUIPC
                 ls_type_D =4'b1111; // Not used in AUIPC
@@ -367,17 +367,17 @@ module Decoder(
             end
             EXE_LUI: begin // LUI
                 rs1_D = 5'b00000; // Using x0 as rs1
-                rs2_D = rs2_D; // Not using rs2_D in LUI
-                rd_D = instruction_D[11:7]; 
+                rs2_D = 5'b00000; // Not using rs2_D in LUI
+                rd_D = instruction_D[11:7];
                 ALU_ctrl_D = ADD; // ADD for address calculation
                 branch = BNT; // Not used in LUI
                 ls_type_D =4'b1111; // Not used in LUI
                 wb_inst_have_flag = 1'b0;
             end
             EXE_NOP: begin // NOP
-                rs1_D = rs1_D; // Not using rs1 in NOP
-                rs2_D = rs2_D; // Not using rs2_D in NOP
-                rd_D = rd_D; // Not using rd_D in NOP
+                rs1_D = 5'b00000; // Not using rs1 in NOP
+                rs2_D = 5'b00000; // Not using rs2_D in NOP
+                rd_D = 5'b00000; // Not using rd_D in NOP
                 ALU_ctrl_D = NOP;  // NOP operation
                 branch = BNT; // Not used in NOP
                 ls_type_D =4'b1111;
@@ -385,9 +385,9 @@ module Decoder(
             end
 
             default: begin
-                rs1_D = 5'b0;
-                rs2_D = 5'b0;
-                rd_D = 5'b0;
+                rs1_D = 5'b00000;
+                rs2_D = 5'b00000;
+                rd_D  = 5'b00000;
                 ALU_ctrl_D = NOP; // Default to NOP
                 branch = BNT; // Not used in default
                 ls_type_D =4'b1111;
